@@ -1,41 +1,31 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 
-	_ "github.com/lib/pq"
+	"github.com/mohamed2394/sahla/pkg/db"
 )
 
 func main() {
-	// PostgreSQL connection string
-	const (
-		host     = "localhost"
-		port     = 5432
-		user     = "postgres"
-		password = "user"
-		dbname   = "sahla"
-	)
-
-	// Construct connection string
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+	dsn := "host=localhost user=postgres password=user dbname=sahla port=5432 sslmode=disable"
 
 	// Connect to the PostgreSQL database
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		log.Fatalf("Error opening database connection: %v", err)
-	}
-	defer db.Close()
-
-	// Verify the connection
-	err = db.Ping()
+	database, err := db.Connect(dsn)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
+	defer func() {
+		dbSQL, err := database.DB()
+		if err != nil {
+			log.Fatalf("Error getting db from database: %v", err)
+		}
+		dbSQL.Close()
+	}()
 
-	fmt.Println("Successfully connected to PostgreSQL!")
+	// AutoMigrate models
+	if err := db.AutoMigrateModels(); err != nil {
+		log.Fatalf("Error migrating models: %v", err)
+	}
 
+	log.Println("Database connected and migrated successfully!")
 }

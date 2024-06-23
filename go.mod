@@ -2,10 +2,7 @@ module github.com/mohamed2394/sahla
 
 go 1.22.2
 
-require (
-	github.com/lib/pq v1.10.9
-	gorm.io/gorm v1.25.10
-)
+require gorm.io/gorm v1.25.10
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
