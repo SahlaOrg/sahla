@@ -2,12 +2,19 @@ package main
 
 import (
 	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/mohamed2394/sahla/pkg/db"
 )
 
 func main() {
-	dsn := "host=localhost user=postgres password=user dbname=sahla port=5432 sslmode=disable"
+	errV := godotenv.Load()
+	if errV != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	dsn := os.Getenv("DB")
 
 	// Connect to the PostgreSQL database
 	database, err := db.Connect(dsn)
