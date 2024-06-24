@@ -5,10 +5,11 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/mohamed2394/sahla/pkg/db"
+	"github.com/mohamed2394/sahla/api/server"
 )
 
 func main() {
+	// PostgreSQL connection string
 	errV := godotenv.Load()
 	if errV != nil {
 		log.Fatal("Error loading .env file")
@@ -16,23 +17,13 @@ func main() {
 
 	dsn := os.Getenv("DB")
 
-	// Connect to the PostgreSQL database
-	database, err := db.Connect(dsn)
+	// Initialize the server
+	srv, err := server.NewServer(dsn)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
+		log.Fatalf("Error initializing server: %v", err)
 	}
-	defer func() {
-		dbSQL, err := database.DB()
-		if err != nil {
-			log.Fatalf("Error getting db from database: %v", err)
-		}
-		dbSQL.Close()
-	}()
+	defer srv.Close()
 
-	// AutoMigrate models
-	if err := db.AutoMigrateModels(); err != nil {
-		log.Fatalf("Error migrating models: %v", err)
-	}
-
-	log.Println("Database connected and migrated successfully!")
+	// Start the server
+	srv.Start(":8080")
 }

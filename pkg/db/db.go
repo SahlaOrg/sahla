@@ -1,28 +1,34 @@
 package db
 
 import (
+	"log"
+
 	"github.com/mohamed2394/sahla/modules/user/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+var dbInstance *gorm.DB
 
-// Connect initializes a connection to the PostgreSQL database
+// Connect initializes the database connection
 func Connect(dsn string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	DB = db
+	dbInstance = db
 	return db, nil
 }
 
-// AutoMigrateModels performs automatic migration for all models
+// AutoMigrateModels migrates the database models
 func AutoMigrateModels() error {
-	err := DB.AutoMigrate(&domain.User{})
-	if err != nil {
-		return err
+	return dbInstance.AutoMigrate(&domain.User{})
+}
+
+// GetDB returns the instance of the database connection
+func GetDB() *gorm.DB {
+	if dbInstance == nil {
+		log.Fatal("Database connection is not initialized")
 	}
-	return nil
+	return dbInstance
 }
