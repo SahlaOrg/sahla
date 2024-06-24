@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/mohamed2394/sahla/modules/user"
+	"github.com/mohamed2394/sahla/modules/user/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -20,7 +20,7 @@ func Connect(dsn string) (*gorm.DB, error) {
 
 // AutoMigrateModels performs automatic migration for all models
 func AutoMigrateModels() error {
-	err := DB.AutoMigrate(&user.User{})
+	err := DB.AutoMigrate(&domain.User{})
 	if err != nil {
 		return err
 	}
