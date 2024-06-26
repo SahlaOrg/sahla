@@ -152,7 +152,7 @@ func (h *UserHandler) UpdateUser(c echo.Context) error {
 
 func (h *UserHandler) DeleteUser(c echo.Context) error {
 	idStr := c.Param("id")
-	id, err := stringToUUID(idStr)
+	id, err := uuid.FromString(idStr)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid user ID"})
 	}
