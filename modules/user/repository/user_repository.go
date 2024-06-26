@@ -1,6 +1,9 @@
 package repository
 
 import (
+	"errors"
+
+	"github.com/gofrs/uuid"
 	"github.com/mohamed2394/sahla/modules/user/domain"
 	"gorm.io/gorm"
 )
@@ -17,15 +20,14 @@ func (r *userRepository) Create(user *domain.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *userRepository) GetByID(id uint) (*domain.User, error) {
+func (r *userRepository) GetByID(id uuid.UUID) (*domain.User, error) {
 	var user domain.User
-	err := r.db.First(&user, id).Error
+	err := r.db.Where("universal_id = ?", id).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
-
 func (r *userRepository) GetByEmail(email string) (*domain.User, error) {
 	var user domain.User
 	err := r.db.Where("email = ?", email).First(&user).Error
@@ -39,8 +41,15 @@ func (r *userRepository) Update(user *domain.User) error {
 	return r.db.Save(user).Error
 }
 
-func (r *userRepository) Delete(id uint) error {
-	return r.db.Delete(&domain.User{}, id).Error
+func (r *userRepository) Delete(id uuid.UUID) error {
+	result := r.db.Delete(&domain.User{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("user not found")
+	}
+	return nil
 }
 
 func (r *userRepository) List(offset, limit int) ([]*domain.User, error) {

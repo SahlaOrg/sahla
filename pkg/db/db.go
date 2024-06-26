@@ -17,6 +17,7 @@ func Connect(dsn string) (*gorm.DB, error) {
 		return nil, err
 	}
 	dbInstance = db
+
 	return db, nil
 }
 
