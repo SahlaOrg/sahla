@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gofrs/uuid"
@@ -13,14 +15,76 @@ import (
 	"github.com/mohamed2394/sahla/modules/user/dto"
 	"github.com/mohamed2394/sahla/modules/user/repository"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type UserHandler struct {
 	userRepository repository.UserRepository
+	minioClient    *minio.Client
 }
 
 func NewUserHandler(userRepository repository.UserRepository) *UserHandler {
-	return &UserHandler{userRepository: userRepository}
+	// Initialize MinIO client
+	endpoint := "localhost:9000"
+	accessKeyID := "your-access-key"
+	secretAccessKey := "your-secret-key"
+	useSSL := false
+
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: useSSL,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return &UserHandler{
+		userRepository: userRepository,
+		minioClient:    minioClient,
+	}
+}
+func (h *UserHandler) UploadIDImage(c echo.Context) error {
+	idStr := c.Param("id")
+	id, err := uuid.FromString(idStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid user ID"})
+	}
+
+	// Get the file from the request
+	file, err := c.FormFile("id_image")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "No file uploaded"})
+	}
+
+	// Open the file
+	src, err := file.Open()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error opening file"})
+	}
+	defer src.Close()
+
+	// Upload file to MinIO
+	bucketName := "user-id-images"
+	objectName := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
+	contentType := file.Header.Get("Content-Type")
+
+	_, err = h.minioClient.PutObject(context.Background(), bucketName, objectName, src, file.Size, minio.PutObjectOptions{ContentType: contentType})
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error uploading file to MinIO"})
+	}
+
+	// Generate the URL for the uploaded image
+	imageURL := fmt.Sprintf("http://localhost:9000/%s/%s", bucketName, objectName)
+
+	// Update the user's ID image URL in the database
+	err = h.userRepository.UpdateIDImage(id, imageURL)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error updating user ID image URL"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "ID image uploaded successfully", "url": imageURL})
 }
 
 func (h *UserHandler) CreateUser(c echo.Context) error {

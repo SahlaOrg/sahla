@@ -13,6 +13,7 @@ type UserRepository interface {
 	Delete(id uuid.UUID) error
 	List(offset, limit int) ([]*domain.User, error)
 	FindByCriteria(criteria map[string]interface{}) ([]*domain.User, error)
+	UpdateIDImage(id uuid.UUID, imageURL string) error
 
 	// TODO
 }

@@ -11,4 +11,6 @@ func RegisterUserRoutes(e *echo.Echo, userHandler *handler.UserHandler) {
 	e.PUT("/users/:id", userHandler.UpdateUser)
 	e.DELETE("/users/:id", userHandler.DeleteUser)
 	e.GET("/users", userHandler.ListUsers)
+	e.POST("/users/:id/upload-id-image", userHandler.UploadIDImage)
+
 }

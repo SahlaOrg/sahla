@@ -73,3 +73,6 @@ func (r *userRepository) FindByCriteria(criteria map[string]interface{}) ([]*dom
 	}
 	return users, nil
 }
+func (r *userRepository) UpdateIDImage(id uuid.UUID, imageURL string) error {
+	return r.db.Model(&domain.User{}).Where("universal_id = ?", id).Update("id_image_url", imageURL).Error
+}
