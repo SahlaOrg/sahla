@@ -69,15 +69,6 @@ func (h *StorageHandler) DownloadFile(c echo.Context) error {
 	return c.Blob(http.StatusOK, contentType, data)
 }
 
-func (h *StorageHandler) ListFiles(c echo.Context) error {
-	files, err := h.storageService.ListFiles(c.Request().Context(), h.bucketName)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to list files"})
-	}
-
-	return c.JSON(http.StatusOK, files)
-}
-
 func (h *StorageHandler) DeleteFile(c echo.Context) error {
 	filename := c.Param("filename")
 	if filename == "" {
@@ -86,10 +77,19 @@ func (h *StorageHandler) DeleteFile(c echo.Context) error {
 
 	err := h.storageService.DeleteFile(c.Request().Context(), h.bucketName, filename)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete file"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete file: " + err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "File deleted successfully"})
+}
+
+func (h *StorageHandler) ListFiles(c echo.Context) error {
+	files, err := h.storageService.ListFiles(c.Request().Context(), h.bucketName)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to list files: " + err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, files)
 }
 
 func (h *StorageHandler) GetFileInfo(c echo.Context) error {
@@ -100,7 +100,7 @@ func (h *StorageHandler) GetFileInfo(c echo.Context) error {
 
 	fileInfo, err := h.storageService.GetFileInfo(c.Request().Context(), h.bucketName, filename)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get file info"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get file info: " + err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, fileInfo)
@@ -114,7 +114,7 @@ func (h *StorageHandler) FileExists(c echo.Context) error {
 
 	exists, err := h.storageService.FileExists(c.Request().Context(), h.bucketName, filename)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to check file existence"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to check file existence: " + err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, map[string]bool{"exists": exists})

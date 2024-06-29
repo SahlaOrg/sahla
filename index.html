@@ -58,18 +58,6 @@
             }
         }
 
-        async function listFiles() {
-            try {
-                const response = await fetch(`${API_URL}/files`);
-                const files = await response.json();
-                document.getElementById('fileList').innerHTML = files.map(file => 
-                    `<div>${file.Name} (${file.Size} bytes, ${file.LastModified})</div>`
-                ).join('');
-            } catch (error) {
-                document.getElementById('fileList').innerText = 'Error: ' + error.message;
-            }
-        }
-
         async function downloadFile() {
             const filename = document.getElementById('filename').value;
             if (!filename) {
@@ -80,55 +68,70 @@
             window.open(`${API_URL}/download/${filename}`);
         }
 
-        async function getFileInfo() {
-            const filename = document.getElementById('filename').value;
-            if (!filename) {
-                alert('Please enter a filename');
-                return;
-            }
+        async function listFiles() {
+    try {
+        const response = await fetch(`${API_URL}/files`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const files = await response.json();
+        document.getElementById('fileList').innerHTML = files.map(file => 
+            `<div>${file.Name} (${file.Size} bytes, ${file.LastModified})</div>`
+        ).join('');
+    } catch (error) {
+        document.getElementById('fileList').innerText = 'Error: ' + error.message;
+    }
+}
 
-            try {
-                const response = await fetch(`${API_URL}/files/${filename}/info`);
-                const result = await response.json();
-                document.getElementById('result').innerText = JSON.stringify(result, null, 2);
-            } catch (error) {
-                document.getElementById('result').innerText = 'Error: ' + error.message;
-            }
-        }
+async function deleteFile() {
+    const filename = document.getElementById('filename').value;
+    if (!filename) {
+        alert('Please enter a filename');
+        return;
+    }
 
-        async function checkFileExists() {
-            const filename = document.getElementById('filename').value;
-            if (!filename) {
-                alert('Please enter a filename');
-                return;
-            }
+    try {
+        const response = await fetch(`${API_URL}/files/${encodeURIComponent(filename)}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+        document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    } catch (error) {
+        document.getElementById('result').innerText = 'Error: ' + error.message;
+    }
+}
 
-            try {
-                const response = await fetch(`${API_URL}/files/${filename}/exists`);
-                const result = await response.json();
-                document.getElementById('result').innerText = JSON.stringify(result, null, 2);
-            } catch (error) {
-                document.getElementById('result').innerText = 'Error: ' + error.message;
-            }
-        }
+async function getFileInfo() {
+    const filename = document.getElementById('filename').value;
+    if (!filename) {
+        alert('Please enter a filename');
+        return;
+    }
 
-        async function deleteFile() {
-            const filename = document.getElementById('filename').value;
-            if (!filename) {
-                alert('Please enter a filename');
-                return;
-            }
+    try {
+        const response = await fetch(`${API_URL}/files/${encodeURIComponent(filename)}/info`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+        document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    } catch (error) {
+        document.getElementById('result').innerText = 'Error: ' + error.message;
+    }
+}
 
-            try {
-                const response = await fetch(`${API_URL}/files/${filename}`, {
-                    method: 'DELETE'
-                });
-                const result = await response.json();
-                document.getElementById('result').innerText = JSON.stringify(result, null, 2);
-            } catch (error) {
-                document.getElementById('result').innerText = 'Error: ' + error.message;
-            }
-        }
-    </script>
+async function checkFileExists() {
+    const filename = document.getElementById('filename').value;
+    if (!filename) {
+        alert('Please enter a filename');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/files/${encodeURIComponent(filename)}/exists`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const result = await response.json();
+        document.getElementById('result').innerText = JSON.stringify(result, null, 2);
+    } catch (error) {
+        document.getElementById('result').innerText = 'Error: ' + error.message;
+    }
+}    </script>
 </body>
 </html>
