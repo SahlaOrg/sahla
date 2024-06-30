@@ -9,20 +9,25 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mohamed2394/sahla/api/routes"
 
+	creditHandler "github.com/mohamed2394/sahla/modules/credit/handler"
+	creditRepository "github.com/mohamed2394/sahla/modules/credit/repository"
+	creditService "github.com/mohamed2394/sahla/modules/credit/service"
+
 	storageHandler "github.com/mohamed2394/sahla/modules/storage/handler"
-	"github.com/mohamed2394/sahla/modules/storage/minio"
 	storageService "github.com/mohamed2394/sahla/modules/storage/service"
 
-	"github.com/mohamed2394/sahla/modules/user/handler"
+	"github.com/mohamed2394/sahla/modules/storage/minio"
 
-	"github.com/mohamed2394/sahla/modules/user/repository"
+	userHandler "github.com/mohamed2394/sahla/modules/user/handler"
+	userRepository "github.com/mohamed2394/sahla/modules/user/repository"
+
 	"github.com/mohamed2394/sahla/pkg/db"
 	"github.com/mohamed2394/sahla/validation"
 )
 
 type Server struct {
 	Echo           *echo.Echo
-	UserHandler    *handler.UserHandler
+	UserHandler    *userHandler.UserHandler
 	StorageService *storageService.StorageService
 	StorageHandler *storageHandler.StorageHandler
 }
@@ -39,6 +44,7 @@ func NewServer(dsn string) (*Server, error) {
 		return nil, err
 	}
 
+	// Load environment variables
 	errV := godotenv.Load()
 	if errV != nil {
 		log.Fatal("Error loading .env file")
@@ -57,12 +63,20 @@ func NewServer(dsn string) (*Server, error) {
 		return nil, err
 	}
 
+	// Initialize repositories
+	creditRepo := creditRepository.NewGormCreditRepository(database)
+	userRepo := userRepository.NewUserRepository(database)
+
+	// Initialize services
 	storageService := storageService.NewStorageService(minioClient)
+	creditSvc := creditService.NewCreditService(creditRepo, "http://localhost:5000")
 
-	userRepository := repository.NewUserRepository(database)
-	userHandler := handler.NewUserHandler(userRepository)
+	// Initialize handlers
+	userHandler := userHandler.NewUserHandler(userRepo)
 	storageHandler := storageHandler.NewStorageHandler(storageService, "sahlabucket")
+	creditHandler := creditHandler.NewCreditHandler(creditSvc)
 
+	// Create Echo instance
 	e := echo.New()
 	validation.SetupValidator(e)
 	e.Use(middleware.Logger())
@@ -70,8 +84,9 @@ func NewServer(dsn string) (*Server, error) {
 
 	// Register routes
 	routes.RegisterUserRoutes(e, userHandler)
-	routes.SetupAuthRoutes(e, userRepository, jwtSecret, refreshSecret)
+	routes.SetupAuthRoutes(e, userRepo, jwtSecret, refreshSecret)
 	routes.RegisterStorageRoutes(e, storageHandler)
+	routes.RegisterCreditRoutes(e, creditHandler)
 
 	return &Server{
 		Echo:           e,
@@ -82,7 +97,9 @@ func NewServer(dsn string) (*Server, error) {
 
 func (s *Server) Start(addr string) {
 	log.Println("Server is running at", addr)
-	s.Echo.Start(addr)
+	if err := s.Echo.Start(addr); err != nil {
+		log.Fatalf("Error starting server: %v", err)
+	}
 }
 
 func (s *Server) Close() {
@@ -90,5 +107,7 @@ func (s *Server) Close() {
 	if err != nil {
 		log.Fatalf("Error getting db from database: %v", err)
 	}
-	dbSQL.Close()
+	if err := dbSQL.Close(); err != nil {
+		log.Fatalf("Error closing database connection: %v", err)
+	}
 }
