@@ -1,7 +1,13 @@
 {
-    "folders": [
-        {
-            "path": "../../../go-backend"
-        }
-    ]
+	"folders": [
+		{
+			"name": "sahla",
+			"path": "../../.."
+		},
+		{
+			"name": "ml_model",
+			"path": "../../../../Desktop/ml_model"
+		}
+	],
+	"settings": {}
 }
