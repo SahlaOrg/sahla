@@ -9,10 +9,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mohamed2394/sahla/api/routes"
 
-	creditHandler "github.com/mohamed2394/sahla/modules/credit/handler"
-	creditRepository "github.com/mohamed2394/sahla/modules/credit/repository"
-	creditService "github.com/mohamed2394/sahla/modules/credit/service"
-
 	storageHandler "github.com/mohamed2394/sahla/modules/storage/handler"
 	storageService "github.com/mohamed2394/sahla/modules/storage/service"
 
@@ -64,17 +60,14 @@ func NewServer(dsn string) (*Server, error) {
 	}
 
 	// Initialize repositories
-	creditRepo := creditRepository.NewGormCreditRepository(database)
 	userRepo := userRepository.NewUserRepository(database)
 
 	// Initialize services
 	storageService := storageService.NewStorageService(minioClient)
-	creditSvc := creditService.NewCreditService(creditRepo, "http://localhost:5000")
 
 	// Initialize handlers
 	userHandler := userHandler.NewUserHandler(userRepo)
 	storageHandler := storageHandler.NewStorageHandler(storageService, "sahlabucket")
-	creditHandler := creditHandler.NewCreditHandler(creditSvc)
 
 	// Create Echo instance
 	e := echo.New()
@@ -86,7 +79,6 @@ func NewServer(dsn string) (*Server, error) {
 	routes.RegisterUserRoutes(e, userHandler)
 	routes.SetupAuthRoutes(e, userRepo, jwtSecret, refreshSecret)
 	routes.RegisterStorageRoutes(e, storageHandler)
-	routes.RegisterCreditRoutes(e, creditHandler)
 
 	return &Server{
 		Echo:           e,
