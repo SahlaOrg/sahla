@@ -3,7 +3,6 @@ package db
 import (
 	"log"
 
-	credit "github.com/mohamed2394/sahla/modules/credit"
 	"github.com/mohamed2394/sahla/modules/user/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -27,11 +26,6 @@ func Connect(dsn string) (*gorm.DB, error) {
 func AutoMigrateModels() error {
 	return dbInstance.AutoMigrate(
 		&domain.User{},
-		&credit.CreditScore{},
-		&credit.CreditAssessment{},
-		&credit.CreditApplication{},
-		&credit.CreditLimit{},
-		&credit.CreditFeatures{}, // Add this line
 	)
 }
 
