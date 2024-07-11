@@ -1,5 +1,4 @@
-package domain
-
+package domains
 import (
 	"time"
 
@@ -20,5 +19,5 @@ type User struct {
 	RefreshToken          string    `db:"refresh_token" json:"refresh_token"`
 	RefreshTokenExpiresAt time.Time `db:"refresh_token_exp_date" json:"refresh_token_exp_date"`
 	IDImageURL            string    `db:"id_image_url" json:"id_image_url"`
-	CreditScore           int       `db:"credit_score" json:"credit_score"` // New field
+	CreditScore           int       `db:"credit_score" json:"credit_score"` 
 }

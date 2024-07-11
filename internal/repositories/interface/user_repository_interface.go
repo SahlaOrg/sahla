@@ -1,4 +1,4 @@
-package repository
+package interface
 
 import (
 	"github.com/gofrs/uuid"
