@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mohamed2394/sahla/modules/auth/dto"
-	"github.com/mohamed2394/sahla/modules/auth/service"
-
 	"github.com/labstack/echo/v4"
+	dto "github.com/mohamed2394/sahla/internal/dtos"
+	service "github.com/mohamed2394/sahla/internal/services"
+
 )
 
 type AuthHandler struct {

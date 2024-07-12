@@ -2,9 +2,9 @@ package dto
 
 import (
 	"time"
+	domain "github.com/mohamed2394/sahla/internal/domains"
 
 	"github.com/gofrs/uuid"
-	"github.com/mohamed2394/sahla/modules/credit/domain"
 )
 
 type CreatePaymentRequest struct {

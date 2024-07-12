@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/minio/minio-go/v7"
-	mClient "github.com/mohamed2394/sahla/modules/storage/minio"
+	mClient "github.com/mohamed2394/sahla/storage/minio"
 )
 
 type StorageService struct {

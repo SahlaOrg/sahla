@@ -1,9 +1,8 @@
-package domain
+package domains
 
 import (
 	"time"
 
-	user "github.com/mohamed2394/sahla/modules/user/domain"
 
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
@@ -23,7 +22,7 @@ const (
 type Loan struct {
 	gorm.Model
 	UniversalID       uuid.UUID  `gorm:"type:uuid;default:gen_random_uuid()" json:"universal_id"`
-	User              user.User  `json:"user_id"`
+	User              User  `json:"user_id"`
 	Amount            float64    `json:"amount"`
 	OriginalTerm      int        `json:"original_term"` // in months
 	RemainingTerm     int        `json:"remaining_term"`

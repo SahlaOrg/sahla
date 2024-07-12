@@ -8,22 +8,21 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/mohamed2394/sahla/api/routes"
-
-	storageHandler "github.com/mohamed2394/sahla/modules/storage/handler"
-	storageService "github.com/mohamed2394/sahla/modules/storage/service"
-
-	"github.com/mohamed2394/sahla/modules/storage/minio"
-
-	userHandler "github.com/mohamed2394/sahla/modules/user/handler"
-	userRepository "github.com/mohamed2394/sahla/modules/user/repository"
-
 	"github.com/mohamed2394/sahla/pkg/db"
-	"github.com/mohamed2394/sahla/validation"
+	storageHandler "github.com/mohamed2394/sahla/storage/handler"
+		minio "github.com/mohamed2394/sahla/storage/minio"
+
+	storageService "github.com/mohamed2394/sahla/storage/service"
+	handler "github.com/mohamed2394/sahla/internal/handlers"
+		validation "github.com/mohamed2394/sahla/internal/validation"
+
+	repository "github.com/mohamed2394/sahla/internal/repositories"
+
 )
 
 type Server struct {
 	Echo           *echo.Echo
-	UserHandler    *userHandler.UserHandler
+	UserHandler    *handler.UserHandler
 	StorageService *storageService.StorageService
 	StorageHandler *storageHandler.StorageHandler
 }
@@ -60,13 +59,13 @@ func NewServer(dsn string) (*Server, error) {
 	}
 
 	// Initialize repositories
-	userRepo := userRepository.NewUserRepository(database)
+	userRepo := repository.NewUserRepository(database)
 
 	// Initialize services
 	storageService := storageService.NewStorageService(minioClient)
 
 	// Initialize handlers
-	userHandler := userHandler.NewUserHandler(userRepo)
+	userHandler := handler.NewUserHandler(userRepo)
 	storageHandler := storageHandler.NewStorageHandler(storageService, "sahlabucket")
 
 	// Create Echo instance

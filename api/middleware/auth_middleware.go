@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
-	"github.com/mohamed2394/sahla/modules/auth/service"
 )
 
 func JWTMiddleware(authService service.AuthService, jwtSecret string) echo.MiddlewareFunc {

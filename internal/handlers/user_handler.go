@@ -11,10 +11,11 @@ import (
 	"github.com/gofrs/uuid"
 
 	"github.com/labstack/echo/v4"
-	"github.com/mohamed2394/sahla/modules/user/domain"
-	"github.com/mohamed2394/sahla/modules/user/dto"
-	"github.com/mohamed2394/sahla/modules/user/repository"
 	"golang.org/x/crypto/bcrypt"
+    repository "github.com/mohamed2394/sahla/internal/repositories"
+	domain "github.com/mohamed2394/sahla/internal/domains"
+    dto "github.com/mohamed2394/sahla/internal/dtos"
+
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"

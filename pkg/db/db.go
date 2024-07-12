@@ -2,8 +2,7 @@ package db
 
 import (
 	"log"
-
-	"github.com/mohamed2394/sahla/modules/user/domain"
+    domain "github.com/mohamed2394/sahla/internal/domains"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/mohamed2394/sahla/modules/credit/domain"
+	domains "github.com/mohamed2394/sahla/internal/domains"
 
 	"github.com/gofrs/uuid"
 )
@@ -21,7 +21,7 @@ type LoanResponse struct {
 	Amount            float64           `json:"amount"`
 	OriginalTerm      int               `json:"original_term"`
 	RemainingTerm     int               `json:"remaining_term"`
-	Status            domain.LoanStatus `json:"status"`
+	Status            domains.LoanStatus `json:"status"`
 	ApprovedAt        *time.Time        `json:"approved_at,omitempty"`
 	ActivatedAt       *time.Time        `json:"activated_at,omitempty"`
 	NextPaymentDate   *time.Time        `json:"next_payment_date,omitempty"`

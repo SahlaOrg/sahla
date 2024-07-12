@@ -4,10 +4,10 @@ import (
 	"errors"
 	"sync"
 	"time"
+	repository "github.com/mohamed2394/sahla/internal/repositories"
 
 	"github.com/gofrs/uuid"
 	"github.com/golang-jwt/jwt"
-	"github.com/mohamed2394/sahla/modules/user/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 

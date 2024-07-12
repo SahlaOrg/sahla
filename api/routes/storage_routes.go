@@ -2,7 +2,8 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/mohamed2394/sahla/modules/storage/handler"
+	handler "github.com/mohamed2394/sahla/storage/handler"
+
 )
 
 func RegisterStorageRoutes(e *echo.Echo, h *handler.StorageHandler) {

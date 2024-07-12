@@ -3,7 +3,7 @@ package config
 import (
 	"os"
 
-	"github.com/mohamed2394/sahla/modules/storage/minio"
+	"github.com/mohamed2394/sahla/storage/minio"
 )
 
 type AppConfig struct {

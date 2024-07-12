@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/labstack/echo/v4"
-	"github.com/mohamed2394/sahla/modules/storage/service"
+	"github.com/mohamed2394/sahla/storage/service"
 )
 
 type StorageHandler struct {

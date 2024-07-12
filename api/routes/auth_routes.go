@@ -2,9 +2,11 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	handler "github.com/mohamed2394/sahla/modules/auth/handler"
-	"github.com/mohamed2394/sahla/modules/auth/service"
-	"github.com/mohamed2394/sahla/modules/user/repository"
+	repository "github.com/mohamed2394/sahla/internal/repositories"
+	handler "github.com/mohamed2394/sahla/internal/handlers"
+	service "github.com/mohamed2394/sahla/internal/services"
+
+
 )
 
 func SetupAuthRoutes(e *echo.Echo, userRepo repository.UserRepository, jwtSecret, refreshSecret string) {

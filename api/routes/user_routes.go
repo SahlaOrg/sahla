@@ -2,7 +2,8 @@ package routes
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/mohamed2394/sahla/modules/user/handler"
+	handler "github.com/mohamed2394/sahla/internal/handlers"
+
 )
 
 func RegisterUserRoutes(e *echo.Echo, userHandler *handler.UserHandler) {
