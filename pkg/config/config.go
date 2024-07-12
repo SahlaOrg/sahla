@@ -8,7 +8,6 @@ import (
 
 type AppConfig struct {
 	MinioClient *minio.MinioClient
-	// Add other configuration fields as needed
 }
 
 func NewAppConfig() (*AppConfig, error) {
@@ -16,7 +15,7 @@ func NewAppConfig() (*AppConfig, error) {
 	minioEndpoint := os.Getenv("MINIO_ENDPOINT")
 	minioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
 	minioSecretKey := os.Getenv("MINIO_SECRET_KEY")
-	minioUseSSL := false // Set to true if using SSL
+	minioUseSSL := false 
 
 	minioClient, err := minio.NewMinioClient(minioEndpoint, minioAccessKey, minioSecretKey, minioUseSSL)
 	if err != nil {
@@ -25,6 +24,5 @@ func NewAppConfig() (*AppConfig, error) {
 
 	return &AppConfig{
 		MinioClient: minioClient,
-		// Initialize other configuration fields
 	}, nil
 }
