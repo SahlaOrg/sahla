@@ -114,11 +114,11 @@ func (h *CreditPaymentHandler) CreatePayment(c echo.Context) error {
 		return h.handleError(c, err, "validation failed")
 	}
 
-	if !isValidPaymentMethod(req.PaymentMethod) {
-		err := errors.New("unsupported payment method")
-		h.logger.Error("Validation failed", zap.Error(err))
-		return h.handleError(c, err, "unsupported payment method")
-	}
+    if !isValidPaymentMethod(req.PaymentMethod) {
+        err := errors.New("unsupported payment method")
+        h.logger.Error("Validation failed", zap.Error(err))
+        return h.handleError(c, err, "unsupported payment method")
+    }
 
 	payment := &domains.Payment{
 		CreditApplicationID: req.CreditApplicationID,
@@ -137,11 +137,9 @@ func (h *CreditPaymentHandler) CreatePayment(c echo.Context) error {
 	return c.JSON(http.StatusCreated, h.createPaymentResponse(payment))
 }
 
-func isValidPaymentMethod(paymentMethod string) bool {
-	// Add supported payment method validation logic here
-	return paymentMethod == "card" // Example
+func isValidPaymentMethod(paymentMethod domains.PaymentMethod) bool {
+    return paymentMethod.Type == "card"
 }
-// GetPaymentDetails retrieves the details of a specific payment
 func (h *CreditPaymentHandler) GetPaymentDetails(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(c.Request().Context(), 10*time.Second)
 	defer cancel()
